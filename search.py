@@ -18,7 +18,6 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
-import sys
 
 from collections import namedtuple
 SearchNode = namedtuple('SearchNode', ['state', 'parent', 'action', 'cost', 'height'])
@@ -118,8 +117,7 @@ def depthFirstSearch(problem):
                 nextNode = SearchNode(nextState, node, action, node.cost + cost, node.height + 1)
                 fringe.push(nextNode)
 
-    print "Solution not found"
-    sys.exit(1)
+    return None
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -200,11 +198,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     initialState = problem.getStartState()
     initialNode = SearchNode(initialState, None, None, 0, 0)
-    fringe.update(initialNode, 0)
+    h = heuristic(initialState, problem)
+    fringe.update(initialNode, h)
 
     while not fringe.isEmpty():
         node = fringe.pop()
         state = node.state
+        if state in visited:
+            continue
 
         if problem.isGoalState(state):
             solution = []
