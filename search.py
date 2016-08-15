@@ -103,6 +103,8 @@ def depthFirstSearch(problem):
     while not fringe.isEmpty():
         node = fringe.pop()
         state = node.state
+        if state in visited:
+            continue
 
         if problem.isGoalState(state):
             solution = []
@@ -134,6 +136,8 @@ def breadthFirstSearch(problem):
     while not fringe.isEmpty():
         node = fringe.pop()
         state = node.state
+        if state in visited:
+            continue
 
         if problem.isGoalState(state):
             solution = []
@@ -165,6 +169,8 @@ def uniformCostSearch(problem):
     while not fringe.isEmpty():
         node = fringe.pop()
         state = node.state
+        if state in visited:
+            continue
 
         if problem.isGoalState(state):
             solution = []
