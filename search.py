@@ -215,12 +215,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return solution[::-1]
 
         visited.add(state)
-        for nextState, action, cost in problem.getSuccessors(state):
+        successors = problem.getSuccessors(state)
+        for nextState, action, cost in successors:
             if not nextState in visited:
                 g = node.cost + cost
                 h = heuristic(nextState, problem)
                 f = g + h
-                nextNode = SearchNode(nextState, node, action, f, node.height + 1)
+                nextNode = SearchNode(nextState, node, action, g, node.height + 1)
                 fringe.update(nextNode, f)
 
     return None
