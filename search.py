@@ -19,9 +19,8 @@ Pacman agents (in searchAgents.py).
 
 import util
 import sys
+
 from collections import namedtuple
-
-
 SearchNode = namedtuple('SearchNode', ['state', 'parent', 'action', 'cost', 'height'])
 
 
@@ -151,8 +150,7 @@ def breadthFirstSearch(problem):
                 nextNode = SearchNode(nextState, node, action, node.cost + cost, node.height + 1)
                 fringe.push(nextNode)
 
-    print "Solution not found"
-    sys.exit(1)
+    return None
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -183,8 +181,7 @@ def uniformCostSearch(problem):
                 nextNode = SearchNode(nextState, node, action, node.cost + cost, node.height + 1)
                 fringe.push(nextNode)
 
-    print "Solution not found"
-    sys.exit(1)
+    return None
 
 def nullHeuristic(state, problem=None):
     """
@@ -195,8 +192,37 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # "*** YOUR CODE HERE ***"
+    # util.raiseNotDefined()
+
+    fringe = util.PriorityQueue()
+    visited = set()
+
+    initialState = problem.getStartState()
+    initialNode = SearchNode(initialState, None, None, 0, 0)
+    fringe.update(initialNode, 0)
+
+    while not fringe.isEmpty():
+        node = fringe.pop()
+        state = node.state
+
+        if problem.isGoalState(state):
+            solution = []
+            while not node.parent is None:
+                solution.append(node.action)
+                node = node.parent
+            return solution[::-1]
+
+        visited.add(state)
+        for nextState, action, cost in problem.getSuccessors(state):
+            if not nextState in visited:
+                g = node.cost + cost
+                h = heuristic(nextState, problem)
+                f = g + h
+                nextNode = SearchNode(nextState, node, action, f, node.height + 1)
+                fringe.update(nextNode, f)
+
+    return None
 
 
 # Abbreviations
