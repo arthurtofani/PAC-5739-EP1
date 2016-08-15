@@ -38,6 +38,7 @@ from game import Directions
 from game import Agent
 from game import Actions
 import util
+import itertools
 import time
 import search
 
@@ -289,20 +290,24 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
 
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # "*** YOUR CODE HERE ***"
+        # util.raiseNotDefined()
+        return (self.startingPosition, (False, False, False, False))
+
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # "*** YOUR CODE HERE ***"
+        # util.raiseNotDefined()
+        return all(state[1])
 
     def getSuccessors(self, state):
         """
@@ -315,6 +320,10 @@ class CornersProblem(search.SearchProblem):
             is the incremental cost of expanding to that successor
         """
 
+        currentPosition = state[0]
+        currentCornersReached = state[1]
+        x,y = currentPosition
+
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -325,6 +334,16 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextPosition = (nextx, nexty)
+                nextCornersReached = [c for c in currentCornersReached]
+                if nextPosition in self.corners:
+                    nextCornersReached[self.corners.index(nextPosition)] = True
+                cost = 1
+                successors.append(((nextPosition, tuple(nextCornersReached)), action, cost))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -357,10 +376,27 @@ def cornersHeuristic(state, problem):
     admissible (as well as consistent).
     """
     corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
+    # walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+
+    startingPosition = state[0]
+    cornersReachedSoFar = state[1]
+    cornersToReach = tuple(corners[i] for i in range(len(corners)) if not (cornersReachedSoFar[i] or corners[i] == startingPosition))
+
+    if len(cornersToReach) == 0:
+        return 0
+
+    h = 999999
+    for path in itertools.permutations(cornersToReach):
+        estimate = 0
+        origin = startingPosition
+        for position in path:
+            estimate += abs(position[0]-origin[0]) + abs(position[1]-origin[1])
+            origin = position
+        if estimate < h:
+            h = estimate
+
+    return h
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
