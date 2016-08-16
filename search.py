@@ -121,6 +121,54 @@ def depthFirstSearch(problem):
 
     return None
 
+def iterativeDeepeningSearch(problem):
+    """
+    Start with depth = 0.
+    Search the deepest nodes in the search tree first up to a given depth.
+    If solution not found, increment depth limit and start over.
+
+    Your search algorithm needs to return a list of actions that reaches the
+    goal. Make sure to implement a graph search algorithm.
+    """
+    # "*** YOUR CODE HERE ***"
+    # util.raiseNotDefined()
+
+    initialState = problem.getStartState()
+    initialNode = SearchNode(initialState, None, None, 0, 0)
+
+    maxDepth = 1
+    while True:
+        fringe = util.Stack()
+        visited = {}
+        fringe.push(initialNode)
+
+        while not fringe.isEmpty():
+            node = fringe.pop()
+            state = node.state
+            if state in visited and visited[state] < node.height:
+                continue
+
+            if problem.isGoalState(state):
+                solution = []
+                while not node.parent is None:
+                    solution.append(node.action)
+                    node = node.parent
+                return solution[::-1]
+
+            if node.height > maxDepth:
+                continue
+
+            visited[state] = node.height
+            for nextState, action, cost in problem.getSuccessors(state):
+                if nextState not in visited or visited[nextState] > node.height+1:
+                    nextNode = SearchNode(nextState, node, action, node.cost + cost, node.height + 1)
+                    fringe.push(nextNode)
+
+        maxDepth += 1
+
+    return None
+
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     # "*** YOUR CODE HERE ***"
@@ -238,3 +286,4 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+ids = iterativeDeepeningSearch
