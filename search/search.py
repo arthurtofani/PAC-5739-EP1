@@ -67,74 +67,60 @@ def tinyMazeSearch(problem):
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
     sequence of moves will be incorrect, so only use this for tinyMaze.
     """
+    # import code; code.interact(local=dict(globals(), **locals()))
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+
 def depthFirstSearch(problem):
-    initial_state = (problem.getStartState(), None, 0)
-    stack = util.Stack()
-    stack.push(initial_state)
-    visited, parent_states = dict(), dict()
-    parent_states[initial_state[0]] = None
-    goal_state = depthFirstFindGoal(problem, stack, visited, parent_states)
-    return path(goal_state, visited, parent_states)
-
-
-def path(state, visited, parent_states):
-    direction = visited[state]
-    if parent_states[state]==None:
-        return []
-    else:
-        #import code; code.interact(local=dict(globals(), **locals()))
-        return path(parent_states[state], visited, parent_states) + [direction]
-
-
-def depthFirstFindGoal(problem, stack, visited, parent_states):
-    while stack.isEmpty()==False:
-        state, direction, cost = stack.pop()
-        if state in visited:
-            continue
-        visited[state] = direction
-        if problem.isGoalState(state):
-            return state
-        for successor in problem.getSuccessors(state):
-            successor_state = successor[0]
-            if not (successor_state in visited):
-                parent_states[successor[0]] = state
-                stack.push(successor)
-    return None
-
+    initial_state = (problem.getStartState(), [])
+    data_structure = util.Stack()
+    data_structure.push(initial_state)
+    visited = []
+    while data_structure.isEmpty()==False:
+        state = data_structure.pop()
+        if state in visited: continue
+        visited.append(state[0])
+        if problem.isGoalState(state[0]):
+            return state[1]
+        for successor in problem.getSuccessors(state[0]):
+            s_state, s_dir, s_cost = successor
+            if not s_state in visited:
+                data_structure.push((s_state, state[1] + [s_dir]))
 
 def breadthFirstSearch(problem):
-    initial_state = (problem.getStartState(), None, 0)
-    queue = util.Queue()
-    queue.push(initial_state)
-    visited, parent_states = dict(), dict()
-    parent_states[initial_state[0]] = None
-    goal_state = breadthFirstFindGoal(problem, queue, visited, parent_states)
-    return path(goal_state, visited, parent_states)
+    initial_state = (problem.getStartState(), [])
+    data_structure = util.Queue()
+    data_structure.push(initial_state)
+    visited = [initial_state[0]]
+    while data_structure.isEmpty()==False:
+        state = data_structure.pop()
+        if problem.isGoalState(state[0]):
+            return state[1]
+        for successor in problem.getSuccessors(state[0]):
+            s_state, s_dir, s_cost = successor
+            if not (s_state in visited):
+                visited.append(s_state)
+                data_structure.push((s_state, state[1] + [s_dir]))
 
-def breadthFirstFindGoal(problem, queue, visited, parent_states):
-    while queue.isEmpty()==False:
-        state, direction, cost = queue.pop()
-        if state in visited:
-            continue
-        visited[state] = direction
-        if problem.isGoalState(state):
-            return state
-        for successor in problem.getSuccessors(state):
-            successor_state = successor[0]
-            if not (successor_state in visited):
-                parent_states[successor_state] = state
-                queue.push(successor)
-    return None
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initial_state = (problem.getStartState(), [], 1)
+    data_structure = util.PriorityQueue()
+    data_structure.push(initial_state, initial_state[2])
+    visited = [initial_state[0]]
+    while data_structure.isEmpty()==False:
+        state = data_structure.pop()
+        if problem.isGoalState(state[0]):
+            return state[1]
+        for successor in problem.getSuccessors(state[0]):
+            s_state, s_dir, s_cost = successor
+            if not (s_state in visited):
+                visited.append(s_state)
+                data_structure.push((s_state, (state[1] + [s_dir]), s_cost + state[2]), s_cost + state[2])
+
 
 
 def nullHeuristic(state, problem=None):
