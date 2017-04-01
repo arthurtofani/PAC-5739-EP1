@@ -107,19 +107,23 @@ def breadthFirstSearch(problem):
 
 
 def uniformCostSearch(problem):
-    initial_state = (problem.getStartState(), [], 1)
     data_structure = util.PriorityQueue()
-    data_structure.push(initial_state, initial_state[2])
-    visited = [initial_state[0]]
-    while data_structure.isEmpty()==False:
+    initial_state = (problem.getStartState(), [], 0)
+    for successor in problem.getSuccessors(initial_state[0]):
+        new_state = (successor[0], initial_state[1] + [successor[1]], successor[2] + initial_state[2])
+        data_structure.push(new_state, new_state[2])
+    closed = []
+    closed.append(initial_state[0])
+    while not data_structure.isEmpty():
         state = data_structure.pop()
         if problem.isGoalState(state[0]):
             return state[1]
-        for successor in problem.getSuccessors(state[0]):
-            s_state, s_dir, s_cost = successor
-            if not (s_state in visited):
-                visited.append(s_state)
-                data_structure.push((s_state, (state[1] + [s_dir]), s_cost + state[2]), s_cost + state[2])
+        if state[0] not in closed:
+            closed.append(state[0])
+            successors = problem.getSuccessors(state[0])
+            for successor in successors:
+                new_state = (successor[0], state[1] + [successor[1]], successor[2] + state[2])
+                data_structure.push(new_state, new_state[2])
 
 
 
