@@ -112,14 +112,14 @@ def uniformCostSearch(problem):
     for successor in problem.getSuccessors(initial_state[0]):
         new_state = (successor[0], initial_state[1] + [successor[1]], successor[2] + initial_state[2])
         data_structure.push(new_state, new_state[2])
-    closed = []
-    closed.append(initial_state[0])
+    visited = []
+    visited.append(initial_state[0])
     while not data_structure.isEmpty():
         state = data_structure.pop()
         if problem.isGoalState(state[0]):
             return state[1]
-        if state[0] not in closed:
-            closed.append(state[0])
+        if state[0] not in visited:
+            visited.append(state[0])
             successors = problem.getSuccessors(state[0])
             for successor in successors:
                 new_state = (successor[0], state[1] + [successor[1]], successor[2] + state[2])
@@ -134,11 +134,30 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # data_structure = util.PriorityQueueWithFunction()
+    # visited = []
+    # initial_state = (problem.getStartState(), [], 0)
+    # visited.append(initial_state[0])
+    # import code; code.interact(local=dict(globals(), **locals()))
+    
+    data_structure = util.PriorityQueueWithFunction(lambda state: state[2] + heuristic(state[0], problem))
+    initial_state = (problem.getStartState(), [], 0)
+    for successor in problem.getSuccessors(initial_state[0]):
+        new_state = (successor[0], initial_state[1] + [successor[1]], successor[2] + initial_state[2])
+        data_structure.push(new_state)
+    visited = []
+    visited.append(initial_state[0])    
+    while not data_structure.isEmpty():
+        state = data_structure.pop()
+        if problem.isGoalState(state[0]):
+            return state[1]
+        if state[0] not in visited:
+            visited.append(state[0])
+            successors = problem.getSuccessors(state[0])
+            for successor in successors:
+                new_state = (successor[0], state[1] + [successor[1]], successor[2] + state[2])
+                data_structure.push(new_state)
 
 
 def learningRealTimeAStar(problem, heuristic=nullHeuristic):
