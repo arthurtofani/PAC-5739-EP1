@@ -134,13 +134,7 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def aStarSearch(problem, heuristic=nullHeuristic):
-    # data_structure = util.PriorityQueueWithFunction()
-    # visited = []
-    # initial_state = (problem.getStartState(), [], 0)
-    # visited.append(initial_state[0])
-    # import code; code.interact(local=dict(globals(), **locals()))
-    
+def aStarSearch(problem, heuristic=nullHeuristic):   
     data_structure = util.PriorityQueueWithFunction(lambda state: state[2] + heuristic(state[0], problem))
     initial_state = (problem.getStartState(), [], 0)
     for successor in problem.getSuccessors(initial_state[0]):
