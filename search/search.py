@@ -154,12 +154,25 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 data_structure.push(new_state)
 
 
-def learningRealTimeAStar(problem, heuristic=nullHeuristic):
-    """Execute a number of trials of LRTA* and return the best plan found."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
-    # MAXTRIALS = ...
+def learningRealTimeAStar(problem, heuristic=nullHeuristic):    
+    MAXTRIALS = 10
+    H = {}    
+    s = problem.getStartState()
+    path_to_s = {}
+    path_to_s[s] = []
+    actions = []
+    H[s] = heuristic(s, problem)
+    while not problem.isGoalState(s):
+        successors = problem.getSuccessors(s)
+        for successor in successors:
+            successor_state = successor[0]
+            H[successor_state] = H.get(successor_state) or heuristic(successor_state, problem)
+        s1_state, s1_action, s1_cost = min(successors, key=lambda x: x[2] + H.get(x[0]) )
+        f_s1 = s1_cost + H.get(s1_state)
+        H[s] = max(H[s], f_s1)
+        actions.append(s1_action)
+        s = s1_state
+    return actions
 
 
 # Abbreviations
